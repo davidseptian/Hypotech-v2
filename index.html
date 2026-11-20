@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hypotech — Dashboard Penjualan v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0c; --panel:#1a1a19; --panel-2:#222120; --line:#2f2d2b; --grid:#2a2928;
+  --gold:#c9a227; --gold-light:#e9c767;
+  --text:#f3f1ea; --text-2:#c3c2b7; --muted:#9a968c;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --b1:#d55181; --b2:#0ca30c; --b3:#9085e9; --b4:#e66767;
+  --good:#0ca30c; --warn:#c98500; --bad:#e66767; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.45}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 60px}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:6px 0 18px;border-bottom:1px solid var(--line)}
+.brand{font-size:22px;font-weight:800;letter-spacing:.2px;background:linear-gradient(90deg,var(--gold-light),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:12px;margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);color:var(--text-2);background:var(--panel)}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block}
+.badge.live i{background:var(--good)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px}
+.filters label{font-size:12px;color:var(--muted)}
+select,input[type=text],button.btn{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;font-size:13px}
+button.btn{cursor:pointer}
+button.btn:hover,select:hover{border-color:var(--gold-dim,#5f4f19)}
+button.btn.gold{background:var(--gold);color:#17140a;border-color:var(--gold);font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--text-2);cursor:pointer}
+.chip.on{background:var(--gold);color:#17140a;border-color:var(--gold);font-weight:700}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 4px;border-bottom:1px solid var(--line)}
+nav.tabs button{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent}
+nav.tabs button.on{color:var(--gold-light);border-bottom-color:var(--gold)}
+section.tab{display:none;margin-top:16px}
+section.tab.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:24px;font-weight:800;margin-top:4px;letter-spacing:-.3px}
+.kpi .n{font-size:11.5px;color:var(--text-2);margin-top:3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;min-width:0}
+.card h3{margin:0;font-size:14px;font-weight:700}
+.card .d{font-size:12px;color:var(--muted);margin:3px 0 10px}
+.card .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.tbtn{font-size:11px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tbtn:hover{color:var(--text)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:2px 0 6px;font-size:12px;color:var(--text-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend b{width:10px;height:10px;border-radius:3px;display:inline-block}
+.legend u{width:14px;height:0;border-top:2px solid;display:inline-block}
+svg text{font-family:'Plus Jakarta Sans',sans-serif;fill:var(--muted);font-size:11px}
+svg .grid{stroke:var(--grid);stroke-width:1}
+svg .axis{stroke:var(--line);stroke-width:1}
+.tw{overflow:auto;margin-top:8px;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--gold);font-weight:700;background:#121110;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+tr.tot td{font-weight:800;background:var(--panel-2)}
+.st{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid}
+.st.ok{color:var(--good);border-color:var(--good)}.st.w{color:var(--warn);border-color:var(--warn)}.st.x{color:var(--bad);border-color:var(--bad)}.st.n{color:var(--muted);border-color:var(--line)}
+.hb{display:grid;grid-template-columns:minmax(120px,38%) 1fr auto;gap:10px;align-items:center;padding:5px 0;font-size:12.5px}
+.hb .nm{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .tr{height:10px;background:#242321;border-radius:5px;overflow:hidden}
+.hb .br{height:100%;border-radius:0 4px 4px 0;background:var(--gold)}
+.hb .vl{font-weight:700;font-variant-numeric:tabular-nums}
+.note{background:#1d1a10;border:1px solid #4a3f17;border-radius:10px;padding:10px 13px;font-size:12.5px;color:#e6d9a4;margin-top:12px}
+.note b{color:var(--gold-light)}
+#tip{position:fixed;pointer-events:none;z-index:50;background:#0f0f0e;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12px;min-width:150px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:none}
+#tip .h{color:var(--muted);margin-bottom:5px;font-size:11.5px}
+#tip .r{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:3px}
+#tip .r em{font-style:normal;color:var(--text-2);display:flex;align-items:center;gap:7px}
+#tip .r em u{width:12px;border-top:2px solid;display:inline-block}
+#tip .r strong{font-variant-numeric:tabular-nums}
+footer{margin-top:30px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+.cfg{display:none;margin-top:10px}.cfg.on{display:flex;gap:8px;flex-wrap:wrap}
+.cfg input{flex:1;min-width:260px}
+.dim{opacity:.55;transition:opacity .15s}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <div class="brand">Hypotech · Dashboard Penjualan v2</div>
+    <div class="sub">Membaca Master 2 v3 (Penjualan &amp; Keuangan) · Jan–Okt 2026</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span class="badge" id="badge"><i></i><span id="badgeTxt">Belum terhubung</span></span>
+    <button class="btn" id="cfgBtn">Sumber data</button>
+  </div>
+</header>
+<div class="cfg" id="cfg">
+  <input type="text" id="apiUrl" placeholder="URL Web App Apps Script Master 2 (…/exec)">
+  <input type="password" id="apiKey" placeholder="Kunci rahasia" autocomplete="off" style="max-width:220px">
+  <button class="btn gold" id="loadBtn">Muat dari Master 2</button>
+  <button class="btn" id="resetBtn">Putuskan &amp; hapus kunci</button>
+</div>
+
+<div id="warn" class="note" style="display:none"></div>
+<div class="filters">
+  <label>Periode</label>
+  <select id="from"></select><span style="color:var(--muted)">–</span><select id="to"></select>
+  <div class="chips" id="presets"></div>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button data-t="ringkas" class="on">Ringkasan</button>
+  <button data-t="biaya">Biaya &amp; Laba</button>
+  <button data-t="produk">Produk</button>
+  <button data-t="pembeli">Pembeli</button>
+  <button data-t="status">Status Order</button>
+  <button data-t="uji">Uji Paralel</button>
+</nav>
+
+<section class="tab on" id="t-ringkas">
+  <div class="kpis" id="kpis"></div>
+  <div class="grid2">
+    <div class="card" id="c-omzet"></div>
+    <div class="card" id="c-order"></div>
+  </div>
+  <div class="grid2">
+    <div class="card" id="c-bersih"></div>
+    <div class="card" id="c-share"></div>
+  </div>
+</section>
+<section class="tab" id="t-biaya">
+  <div class="kpis" id="kpis-b"></div>
+  <div class="grid2">
+    <div class="card" id="c-biaya"></div>
+    <div class="card" id="c-iklan"></div>
+  </div>
+  <div class="card" style="margin-top:14px" id="c-pnl"></div>
+</section>
+<section class="tab" id="t-produk">
+  <div class="grid2">
+    <div class="card" id="c-top"></div>
+    <div class="card" id="c-etalase"></div>
+  </div>
+</section>
+<section class="tab" id="t-pembeli">
+  <div class="kpis" id="kpis-p"></div>
+  <div class="grid2">
+    <div class="card" id="c-ulang"></div>
+    <div class="card" id="c-sebaran"></div>
+  </div>
+  <div class="card" style="margin-top:14px" id="c-topbuyer"></div>
+</section>
+<section class="tab" id="t-status">
+  <div class="card" id="c-status"></div>
+</section>
+<section class="tab" id="t-uji">
+  <div class="card" id="c-uji"></div>
+  <div class="card" style="margin-top:14px" id="c-uji2"></div>
+</section>
+
+<footer id="foot"></footer>
+</div>
+<div id="tip" role="status"></div>
+<script>
+const SNAPSHOT = {"bulan": ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt"], "channels": ["SHOPEE", "TIKTOK", "TOKOPEDIA", "OFFLINE STORE", "OFFLINE PROJECT"], "omzet": {"SHOPEE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TIKTOK": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TOKOPEDIA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE STORE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE PROJECT": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, "bersih": {"SHOPEE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TIKTOK": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TOKOPEDIA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE STORE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE PROJECT": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, "orders": {"SHOPEE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TIKTOK": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TOKOPEDIA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE STORE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE PROJECT": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, "batal": {"SHOPEE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TIKTOK": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TOKOPEDIA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE STORE": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "OFFLINE PROJECT": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, "status": {"Selesai": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Diproses": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Dibatalkan": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, "belum_cair_n": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "belum_cair_omzet": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "iklan_tags": ["Iklan TikTok", "Iklan Shopee", "Iklan Lazada", "Iklan CPAS", "Iklan IG Video", "Iklan TikTok Video", "Iklan KOL", "Iklan Lain-lain"], "iklan": {"Iklan TikTok": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan Shopee": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan Lazada": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan CPAS": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan IG Video": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan TikTok Video": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan KOL": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Iklan Lain-lain": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, "bahan_pokok": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "bahan_pendukung": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "ops": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "amal": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "gmv_max": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "catatan_shu": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "alokasi_bahan": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "pembeli": {"unik": 0, "berulang": 0, "omzet_total": 0, "omzet_berulang": 0, "order_total": 0, "order_berulang": 0, "top": [], "sebaran": {}}, "shopee_ulang_omzet": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "shopee_total_omzet": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "top_produk": [], "etalase": [], "sku_tak_terpetakan": 0, "snapshot_note": "Belum terhubung. Isi URL dan kunci di \"Sumber data\"."};
+let DATA = SNAPSHOT;
+const CHC = {'SHOPEE':'var(--s1)','TIKTOK':'var(--s2)','TOKOPEDIA':'var(--s3)','OFFLINE STORE':'var(--s4)','OFFLINE PROJECT':'#8a8a85'};
+const CHN = {'SHOPEE':'Shopee','TIKTOK':'TikTok','TOKOPEDIA':'Tokopedia','OFFLINE STORE':'Offline Store','OFFLINE PROJECT':'Offline Project (B2B)'};
+const $ = s=>document.querySelector(s);
+const rp = n=>(n<0?'-':'')+'Rp'+Math.round(Math.abs(n)).toLocaleString('id-ID');
+const jt = n=>(n/1e6).toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1})+' jt';
+const num = n=>Math.round(n).toLocaleString('id-ID');
+const pct = (a,b)=>b?(a/b*100).toLocaleString('id-ID',{maximumFractionDigits:1})+'%':'–';
+const sum = a=>a.reduce((x,y)=>x+(y||0),0);
+let F=0,T=9;
+const rng = a=>a.slice(F,T+1);
+const mon = ()=>DATA.bulan.slice(F,T+1);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+const chList = ()=>DATA.channels.filter(c=>sum(DATA.omzet[c])>0);
+
+/* ---------- tooltip ---------- */
+const tip=$('#tip');
+function showTip(ev,head,rows){
+  tip.replaceChildren();
+  tip.appendChild(el('div','h',head));
+  rows.forEach(r=>{const d=el('div','r');const e=el('em');
+    if(r.c){const u=el('u');u.style.borderTopColor=r.c;e.appendChild(u)}
+    e.appendChild(document.createTextNode(r.n));d.appendChild(e);d.appendChild(el('strong',null,r.v));tip.appendChild(d)});
+  tip.style.display='block';
+  const w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+14,y=ev.clientY+14;
+  if(x+w>innerWidth-8)x=ev.clientX-w-14;if(y+h>innerHeight-8)y=ev.clientY-h-14;
+  tip.style.left=x+'px';tip.style.top=y+'px';
+}
+const hideTip=()=>tip.style.display='none';
+
+/* ---------- komponen card ---------- */
+function card(id,title,desc,legend,svg,tableFn){
+  const c=$(id);c.replaceChildren();
+  const hd=el('div','hd');const l=el('div');l.appendChild(el('h3',null,title));l.appendChild(el('div','d',desc));hd.appendChild(l);
+  let tw;
+  if(tableFn){const b=el('button','tbtn','Lihat tabel');b.onclick=()=>{const o=tw.style.display==='none';tw.style.display=o?'block':'none';b.textContent=o?'Sembunyikan tabel':'Lihat tabel'};hd.appendChild(b)}
+  c.appendChild(hd);
+  if(legend&&legend.length){const lg=el('div','legend');legend.forEach(x=>{const s=el('span');const k=x.line?el('u'):el('b');if(x.line)k.style.borderTopColor=x.c;else k.style.background=x.c;s.appendChild(k);s.appendChild(document.createTextNode(x.n));lg.appendChild(s)});c.appendChild(lg)}
+  if(svg)c.appendChild(svg);
+  if(tableFn){tw=el('div','tw');tw.style.display='none';tw.appendChild(tableFn());c.appendChild(tw)}
+  return c;
+}
+function table(head,rows,totRow){
+  const t=el('table');const th=el('thead');const tr=el('tr');head.forEach(h=>tr.appendChild(el('th',null,h)));th.appendChild(tr);t.appendChild(th);
+  const tb=el('tbody');rows.forEach(r=>{const x=el('tr');r.forEach(v=>{const td=el('td');if(v instanceof Node)td.appendChild(v);else td.textContent=v;x.appendChild(td)});tb.appendChild(x)});
+  if(totRow){const x=el('tr','tot');totRow.forEach(v=>x.appendChild(el('td',null,v)));tb.appendChild(x)}
+  t.appendChild(tb);return t;
+}
+const SVGNS='http://www.w3.org/2000/svg';
+const S=(t,a={},p)=>{const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+function axisY(svg,W,H,m,max,fmtF){
+  for(let i=0;i<=4;i++){const y=m.t+(H-m.t-m.b)*(1-i/4);S('line',{x1:m.l,x2:W-m.r,y1:y,y2:y,class:i?'grid':'axis'},svg);
+    const t=S('text',{x:m.l-8,y:y+4,'text-anchor':'end'},svg);t.textContent=fmtF(max*i/4)}
+}
+/* stacked bars */
+function stackedBars(cats,series,opt){
+  const W=620,H=270,m={l:48,r:10,t:10,b:26};const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',role:'img','aria-label':opt.label});
+  const tot=cats.map((_,i)=>sum(series.map(s=>s.v[i])));const max=niceMax(Math.max(1,...tot));
+  axisY(svg,W,H,m,max,opt.axisFmt);
+  const band=(W-m.l-m.r)/cats.length,bw=Math.min(30,band*.58);
+  cats.forEach((c,i)=>{
+    const x=m.l+band*i+(band-bw)/2;let y=H-m.b;const pxv=v=>v/max*(H-m.t-m.b);
+    const last=[...series].reverse().findIndex(s=>s.v[i]>0);const topIdx=last<0?-1:series.length-1-last;
+    series.forEach((s,k)=>{const h=pxv(s.v[i]);if(h<=0)return;y-=h;
+      const r=S('rect',{x,y,width:bw,height:Math.max(h-(k<topIdx||true?0:0),0),fill:s.c,stroke:'var(--panel)','stroke-width':2},svg);
+      if(k===topIdx){r.setAttribute('rx',4)}});
+    const t=S('text',{x:x+bw/2,y:H-8,'text-anchor':'middle'},svg);t.textContent=c;
+    const hit=S('rect',{x:m.l+band*i,y:m.t,width:band,height:H-m.t-m.b,fill:'transparent',tabindex:0,'aria-label':c+': '+opt.fmt(tot[i])},svg);
+    const rows=()=>series.slice().reverse().filter(s=>s.v[i]!==0||opt.zero).map(s=>({n:s.n,c:s.c,v:opt.fmt(s.v[i])})).concat([{n:'Total',v:opt.fmt(tot[i])}]);
+    hit.addEventListener('pointermove',e=>showTip(e,c+(opt.note&&opt.note[i]?' · '+opt.note[i]:''),rows()));
+    hit.addEventListener('pointerleave',hideTip);
+    hit.addEventListener('focus',()=>{const b=hit.getBoundingClientRect();showTip({clientX:b.x+b.width/2,clientY:b.y+30},c,rows())});hit.addEventListener('blur',hideTip);
+  });
+  return svg;
+}
+/* line chart */
+function lineChart(cats,series,opt){
+  const W=620,H=270,m={l:48,r:70,t:12,b:26};const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',role:'img','aria-label':opt.label});
+  const all=series.flatMap(s=>s.v.filter(v=>v!=null));const max=niceMax(Math.max(1,...all));
+  axisY(svg,W,H,m,max,opt.axisFmt);
+  const band=(W-m.l-m.r)/cats.length;const X=i=>m.l+band*i+band/2,Y=v=>H-m.b-v/max*(H-m.t-m.b);
+  cats.forEach((c,i)=>{const t=S('text',{x:X(i),y:H-8,'text-anchor':'middle'},svg);t.textContent=c});
+  series.forEach(s=>{let d='';s.v.forEach((v,i)=>{if(v==null){return}d+=(d&&s.v[i-1]!=null?'L':'M')+X(i)+' '+Y(v)});
+    S('path',{d,fill:'none',stroke:s.c,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':s.dash||''},svg)});
+  const cross=S('line',{y1:m.t,y2:H-m.b,stroke:'#555','stroke-width':1,style:'display:none'},svg);
+  const dots=series.map(s=>S('circle',{r:4.5,fill:s.c,stroke:'var(--panel)','stroke-width':2,style:'display:none'},svg));
+  series.forEach((s,k)=>{let li=s.v.length-1;while(li>=0&&s.v[li]==null)li--;if(li>=0&&opt.endLabels){const t=S('text',{x:X(li)+8,y:Y(s.v[li])+(k?12:-4),style:'fill:var(--text-2)'},svg);t.textContent=s.short||s.n}});
+  const hit=S('rect',{x:m.l,y:m.t,width:W-m.l-m.r,height:H-m.t-m.b,fill:'transparent'},svg);
+  hit.addEventListener('pointermove',e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)/r.width*W;let i=Math.floor((px-m.l)/band);i=Math.max(0,Math.min(cats.length-1,i));
+    cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.style.display='';
+    dots.forEach((d,k)=>{const v=series[k].v[i];if(v==null){d.style.display='none'}else{d.setAttribute('cx',X(i));d.setAttribute('cy',Y(v));d.style.display=''}});
+    showTip(e,cats[i],series.map(s=>({n:s.n,c:s.c,v:s.v[i]==null?'belum ada':opt.fmt(s.v[i])})))});
+  hit.addEventListener('pointerleave',()=>{hideTip();cross.style.display='none';dots.forEach(d=>d.style.display='none')});
+  return svg;
+}
+/* horizontal bars */
+function hbars(items,opt){
+  const box=el('div');const max=Math.max(1,...items.map(i=>i.v));
+  items.forEach(it=>{const r=el('div','hb');r.tabIndex=0;r.appendChild(el('div','nm',it.n));r.lastChild.title=it.n;
+    const tr=el('div','tr');const b=el('div','br');b.style.width=(it.v/max*100)+'%';if(it.c)b.style.background=it.c;tr.appendChild(b);r.appendChild(tr);
+    r.appendChild(el('div','vl',opt.fmt(it.v)));
+    const f=e=>showTip(e,it.n,it.rows||[{n:opt.name||'Nilai',v:opt.fmt(it.v)}]);r.addEventListener('pointermove',f);r.addEventListener('pointerleave',hideTip);
+    r.addEventListener('focus',()=>{const bb=r.getBoundingClientRect();showTip({clientX:bb.x+bb.width/2,clientY:bb.y+10},it.n,it.rows||[{n:opt.name||'Nilai',v:opt.fmt(it.v)}])});r.addEventListener('blur',hideTip);
+    box.appendChild(r)});
+  return box;
+}
+const chipSt=(txt,cls)=>{const s=el('span','st '+cls,txt);return s};
+
+/* ---------- perhitungan ---------- */
+function calc(){
+  const D=DATA,idx=[...Array(10).keys()];
+  const chs=chList();
+  const bersihTot=idx.map(i=>sum(D.channels.map(c=>D.bersih[c][i])));
+  const omzetTot=idx.map(i=>sum(D.channels.map(c=>D.omzet[c][i])));
+  const orderTot=idx.map(i=>sum(D.channels.map(c=>D.orders[c][i])));
+  const batalTot=idx.map(i=>sum(D.channels.map(c=>D.batal[c][i])));
+  const iklanTot=idx.map(i=>sum(D.iklan_tags.map(t=>D.iklan[t][i])));
+  const bahan=idx.map(i=>D.bahan_pokok[i]+D.bahan_pendukung[i]);
+  const biaya=idx.map(i=>bahan[i]+D.ops[i]+D.amal[i]+iklanTot[i]);
+  const laba=idx.map(i=>bersihTot[i]-biaya[i]);
+  return {chs,bersihTot,omzetTot,orderTot,batalTot,iklanTot,bahan,biaya,laba};
+}
+
+function render(){
+  const D=DATA,C=calc(),M=mon();
+  const hasOkt=T>=9;
+  /* KPI ringkas */
+  const k=$('#kpis');k.replaceChildren();
+  const addK=(box,l,v,n)=>{const d=el('div','kpi');d.appendChild(el('div','l',l));d.appendChild(el('div','v',v));d.appendChild(el('div','n',n));box.appendChild(d)};
+  const bs=sum(rng(C.bersihTot)),om=sum(rng(C.omzetTot)),od=sum(rng(C.orderTot)),bt=sum(rng(C.batalTot));
+  addK(k,'Omzet kotor',jt(om),'harga setelah diskon penjual, tanpa ongkir');
+  addK(k,'Pendapatan bersih',jt(bs),(hasOkt?'Okt belum lengkap · ':'')+pct(bs,om)+' dari omzet kotor');
+  addK(k,'Order (tanpa batal)',num(od),'rata-rata '+num(od/(T-F+1))+' per bulan');
+  addK(k,'Order dibatalkan',pct(bt,od+bt),num(bt)+' dari '+num(od+bt)+' order');
+  addK(k,'Rata-rata nilai order',rp(om/Math.max(od,1)),'omzet kotor ÷ order');
+  /* omzet stacked */
+  const chs=C.chs;
+  const ser=chs.map(c=>({n:CHN[c],c:CHC[c],v:rng(D.omzet[c])}));
+  const note=M.map((m,i)=>'');
+  card('#c-omzet','Omzet kotor per bulan','Per channel, berdasarkan tanggal order.',ser.map(s=>({n:s.n,c:s.c})),
+    stackedBars(M,ser,{fmt:rp,axisFmt:v=>(v/1e6).toLocaleString('id-ID')+' jt',label:'Omzet kotor per bulan per channel'}),
+    ()=>table(['Bulan',...ser.map(s=>s.n),'Total'],M.map((m,i)=>[m,...ser.map(s=>num(s.v[i])),num(sum(ser.map(s=>s.v[i])))]),['Total',...ser.map(s=>num(sum(s.v))),num(sum(ser.map(s=>sum(s.v))))]));
+  const so=chs.map(c=>({n:CHN[c],c:CHC[c],v:rng(D.orders[c])}));
+  card('#c-order','Jumlah order per bulan','Tanpa order dibatalkan.',so.map(s=>({n:s.n,c:s.c})),
+    stackedBars(M,so,{fmt:num,axisFmt:v=>num(v),label:'Jumlah order per bulan'}),
+    ()=>table(['Bulan',...so.map(s=>s.n),'Total'],M.map((m,i)=>[m,...so.map(s=>num(s.v[i])),num(sum(so.map(s=>s.v[i])))])));
+  const sb=chs.map(c=>({n:CHN[c],c:CHC[c],v:rng(D.bersih[c])}));
+  card('#c-bersih','Pendapatan bersih per bulan','Dana yang diterima setelah potongan marketplace, sebelum biaya iklan. Per bulan order.',sb.map(s=>({n:s.n,c:s.c})),
+    stackedBars(M,sb,{fmt:rp,axisFmt:v=>(v/1e6).toLocaleString('id-ID')+' jt',label:'Pendapatan bersih per bulan',note:M.map((m,i)=>(F+i===9)?'belum lengkap':'')}),
+    ()=>table(['Bulan',...sb.map(s=>s.n),'Total'],M.map((m,i)=>[m,...sb.map(s=>num(s.v[i])),num(sum(sb.map(s=>s.v[i])))])));
+  const shr=chs.map(c=>({c,t:sum(rng(D.omzet[c]))}));const tt=sum(shr.map(x=>x.t));
+  card('#c-share','Porsi omzet per channel','Total periode terpilih.',null,
+    hbars(shr.map(x=>({n:CHN[x.c],v:x.t,c:CHC[x.c],rows:[{n:'Omzet kotor',v:rp(x.t)},{n:'Porsi',v:pct(x.t,tt)}]})),{fmt:v=>jt(v)+' · '+pct(v,tt)}),
+    ()=>table(['Channel','Omzet kotor','Porsi','Pendapatan bersih','Rasio bersih'],shr.map(x=>[CHN[x.c],num(x.t),pct(x.t,tt),num(sum(rng(D.bersih[x.c]))),pct(sum(rng(D.bersih[x.c])),x.t)])));
+
+  /* ---- Biaya & laba ---- */
+  const kb=$('#kpis-b');kb.replaceChildren();
+  const B=sum(rng(C.biaya)),L=sum(rng(C.laba)),I=sum(rng(C.iklanTot));
+  addK(kb,'Pendapatan bersih',jt(bs),hasOkt?'Okt belum lengkap':'Jan–Sep lengkap');
+  addK(kb,'Biaya riil (kas keluar)',jt(B),'bahan + operasional + amal + iklan');
+  addK(kb,'Laba kas operasional',jt(L),'margin '+pct(L,bs)+' dari pendapatan bersih');
+  addK(kb,'Biaya iklan',jt(I),pct(I,bs)+' dari pendapatan bersih');
+  addK(kb,'Pengeluaran bahan',jt(sum(rng(C.bahan))),'pembelian bahan pokok + pendukung (bukan HPP)');
+  const bg=[{n:'Bahan',c:'var(--b1)',v:rng(C.bahan)},{n:'Operasional',c:'var(--b2)',v:rng(D.ops)},{n:'Amal',c:'var(--b3)',v:rng(D.amal)},{n:'Iklan',c:'var(--b4)',v:rng(C.iklanTot)}];
+  card('#c-biaya','Biaya riil per bulan','Dari Biaya_Operasional (pengeluaran riil, bukan alokasi).',bg.map(s=>({n:s.n,c:s.c})),
+    stackedBars(M,bg,{fmt:rp,axisFmt:v=>(v/1e6).toLocaleString('id-ID')+' jt',label:'Biaya riil per bulan'}),
+    ()=>table(['Bulan',...bg.map(s=>s.n),'Total'],M.map((m,i)=>[m,...bg.map(s=>num(s.v[i])),num(sum(bg.map(s=>s.v[i])))])));
+  const tagRows=D.iklan_tags.map(t=>({n:t,v:sum(rng(D.iklan[t]))}));
+  card('#c-iklan','Biaya iklan per tag','Total periode terpilih. Tag tanpa data tampil 0.',null,
+    hbars(tagRows.map(x=>({n:x.n,v:x.v,rows:[{n:'Total',v:rp(x.v)},{n:'Porsi',v:pct(x.v,I)}]})),{fmt:v=>v?jt(v):'0'}),
+    ()=>table(['Tag',...M,'Total'],D.iklan_tags.map(t=>[t,...rng(D.iklan[t]).map(num),num(sum(rng(D.iklan[t])))])));
+  const pr=el('div');
+  const rows=M.map((m,i)=>{const j=F+i;const lb=C.laba[j];return [m+(j===9?' *':''),num(C.bersihTot[j]),num(C.bahan[j]),num(D.ops[j]),num(D.amal[j]),num(C.iklanTot[j]),num(C.biaya[j]),num(lb),pct(lb,C.bersihTot[j])]});
+  const tr=['Total',num(bs),num(sum(rng(C.bahan))),num(sum(rng(D.ops))),num(sum(rng(D.amal))),num(I),num(B),num(L),pct(L,bs)];
+  pr.appendChild(el('h3',null,'Laba kas operasional per bulan'));pr.appendChild(el('div','d','Pendapatan bersih (marketplace + offline) dikurangi biaya riil. Ini laba kas, bukan laba akuntansi: bahan dihitung saat dibeli, bukan saat terjual (HPP menyusul di tahap COGS & PnL).'));
+  const w=el('div','tw');w.appendChild(table(['Bulan','Pendapatan bersih','Bahan','Operasional','Amal','Iklan','Total biaya','Laba kas','Margin'],rows,tr));pr.appendChild(w);
+  if(hasOkt){const n=el('div','note');n.innerHTML='<b>* Oktober belum lengkap.</b> Dana pesanan akhir Oktober baru cair di November, jadi pendapatan bersih dan laba Oktober terlihat lebih rendah dari kenyataan.';pr.appendChild(n)}
+  const n2=el('div','note');n2.innerHTML='<b>Aturan iklan TikTok:</b> iklan TikTok (GMV Max) diambil dari Biaya_Operasional saja. Tab Biaya_Iklan hanya pembanding, jadi tidak dijumlahkan dua kali. Catatan SHU lama tidak mengurangi iklan, sehingga laba di sini lebih rendah dari SHU Kotor.';pr.appendChild(n2);
+  $('#c-pnl').replaceChildren(pr);
+
+  /* ---- Produk ---- */
+  const tp=D.top_produk;
+  card('#c-top','15 produk teratas (omzet kotor)','Jan–Okt, semua channel marketplace (tidak mengikuti filter periode). Nama dari Master 1 (M_SKU).',null,
+    hbars(tp.map(p=>({n:p.nama,v:p.omzet,rows:[{n:'SKU',v:p.sku},{n:'Etalase',v:p.etalase},{n:'Terjual',v:num(p.qty)+' pcs'},{n:'Omzet',v:rp(p.omzet)}]})),{fmt:jt}),
+    ()=>table(['SKU','Produk','Etalase','Qty','Omzet'],tp.map(p=>[p.sku,p.nama,p.etalase,num(p.qty),num(p.omzet)])));
+  const et=D.etalase,te=sum(et.map(e=>e.omzet));
+  card('#c-etalase','Omzet per etalase','Jan–Okt (tidak mengikuti filter periode). Etalase dari Master 1.',null,
+    hbars(et.map(e=>({n:e.nama,v:e.omzet,rows:[{n:'Omzet',v:rp(e.omzet)},{n:'Terjual',v:num(e.qty)+' pcs'},{n:'Porsi',v:pct(e.omzet,te)}]})),{fmt:v=>jt(v)+' · '+pct(v,te)}),
+    ()=>table(['Etalase','Qty','Omzet','Porsi'],et.map(e=>[e.nama,num(e.qty),num(e.omzet),pct(e.omzet,te)])));
+
+  /* ---- Pembeli ---- */
+  const P=D.pembeli,kp=$('#kpis-p');kp.replaceChildren();
+  addK(kp,'Pembeli Shopee unik',num(P.unik),'username, Jan–Okt (tidak ikut filter)');
+  addK(kp,'Pembeli berulang',num(P.berulang),pct(P.berulang,P.unik)+' dari pembeli unik');
+  addK(kp,'Omzet dari pembeli berulang',jt(P.omzet_berulang),pct(P.omzet_berulang,P.omzet_total)+' dari omzet Shopee');
+  addK(kp,'Rata-rata order pembeli berulang',(P.order_berulang/Math.max(P.berulang,1)).toLocaleString('id-ID',{maximumFractionDigits:1}),'order per pembeli');
+  const ul=M.map((m,i)=>D.shopee_total_omzet[F+i]?D.shopee_ulang_omzet[F+i]/D.shopee_total_omzet[F+i]*100:0);
+  card('#c-ulang','Porsi omzet Shopee dari pembeli berulang','Persen per bulan. Hanya Shopee; TikTok/Tokopedia tidak bisa dilacak (username tersensor).',null,
+    stackedBars(M,[{n:'Porsi pembeli berulang',c:'var(--gold)',v:ul}],{fmt:v=>v.toLocaleString('id-ID',{maximumFractionDigits:1})+'%',axisFmt:v=>v.toLocaleString('id-ID')+'%',label:'Porsi omzet dari pembeli berulang'}),
+    ()=>table(['Bulan','Omzet Shopee','Dari pembeli berulang','Porsi'],M.map((m,i)=>[m,num(D.shopee_total_omzet[F+i]),num(D.shopee_ulang_omzet[F+i]),ul[i].toFixed(1)+'%'])));
+  const sb2=Object.entries(P.sebaran);
+  card('#c-sebaran','Sebaran pembeli berulang','Jumlah pembeli menurut banyaknya order.',null,
+    hbars(sb2.map(([k2,v])=>({n:k2+' order',v,rows:[{n:'Pembeli',v:num(v)}]})),{fmt:num}),
+    ()=>table(['Jumlah order','Pembeli'],sb2.map(([k2,v])=>[k2,num(v)])));
+  const tb=$('#c-topbuyer');tb.replaceChildren();tb.appendChild(el('h3',null,'10 pembeli berulang terbesar'));tb.appendChild(el('div','d','Berdasarkan total omzet kotor. Username Shopee.'));
+  const tw2=el('div','tw');tw2.appendChild(table(['Username','Jumlah order','Total omzet'],P.top.map(x=>[x.u,num(x.n),num(x.omzet)])));tb.appendChild(tw2);
+
+  /* ---- Status ---- */
+  const st=$('#c-status');st.replaceChildren();st.appendChild(el('h3',null,'Status order per bulan'));
+  st.appendChild(el('div','d','Status memakai 4 nilai baku. Order yang dananya sudah cair otomatis dinaikkan ke Selesai. Kolom belum cair = order aktif yang dananya belum masuk.'));
+  const sw=el('div','tw');
+  sw.appendChild(table(['Bulan','Selesai','Diproses','Dibatalkan','% batal','Belum cair (order)','Belum cair (omzet)'],
+    M.map((m,i)=>{const j=F+i;const a=D.status.Selesai[j],b=D.status.Diproses[j],c=D.status.Dibatalkan[j];return [m,num(a),num(b),num(c),pct(c,a+b+c),num(D.belum_cair_n[j]),num(D.belum_cair_omzet[j])]}),
+    ['Total',...['Selesai','Diproses','Dibatalkan'].map(s=>num(sum(rng(D.status[s])))),pct(sum(rng(D.status.Dibatalkan)),sum(['Selesai','Diproses','Dibatalkan'].map(s=>sum(rng(D.status[s]))))),num(sum(rng(D.belum_cair_n))),num(sum(rng(D.belum_cair_omzet)))]));
+  st.appendChild(sw);
+
+  /* ---- Uji paralel ---- */
+  const u=$('#c-uji');u.replaceChildren();
+  u.appendChild(el('h3',null,'Uji paralel: Master 2 v3 vs Catatan SHU (sistem lama)'));
+  u.appendChild(el('div','d','Revenue Catatan SHU dibandingkan pendapatan bersih Master 2 v3 (marketplace + offline), per bulan order. Cocok jika ≥ 98%.'));
+  const ids=[...Array(10).keys()];let sa=0,sb3=0;
+  const rowsU=ids.map(i=>{const a=D.catatan_shu[i],b=C.bersihTot[i];if(a!=null){sa+=a;sb3+=b}
+    const p=a?b/a*100:null;const stt=a==null?chipSt('Catatan belum terisi','n'):p>=98?chipSt('Cocok','ok'):p>=95?chipSt('Perlu dilihat','w'):chipSt('Selisih besar','x');
+    return [D.bulan[i],a==null?'–':num(a),num(b),a==null?'–':num(b-a),p==null?'–':p.toFixed(1)+'%',stt]});
+  const wu=el('div','tw');wu.appendChild(table(['Bulan','Catatan SHU (lama)','Master 2 v3','Selisih','Persen','Status'],rowsU,['Jan–Sep',num(sa),num(sb3),num(sb3-sa),(sb3/sa*100).toFixed(1)+'%','']));
+  u.appendChild(wu);
+  const cats=D.bulan,lines=[{n:'Master 2 v3',short:'Master 2 v3',c:'var(--gold-light)',v:C.bersihTot},{n:'Catatan SHU',short:'Catatan SHU',c:'#8a8a85',dash:'5 4',v:D.catatan_shu}];
+  const ch=el('div');ch.style.marginTop='12px';
+  ch.appendChild(Object.assign(el('div','legend'),{}));
+  [['Master 2 v3','var(--gold-light)'],['Catatan SHU','#8a8a85']].forEach(([n,c])=>{const s=el('span');const k=el('u');k.style.borderTopColor=c;s.appendChild(k);s.appendChild(document.createTextNode(n));ch.firstChild.appendChild(s)});
+  const lc=lineChart(cats,lines,{fmt:rp,axisFmt:v=>(v/1e6).toLocaleString('id-ID')+' jt',label:'Pendapatan bersih Master 2 v3 vs Catatan SHU',endLabels:false});lc.style.maxWidth='760px';ch.appendChild(lc);
+  u.appendChild(ch);
+  const n3=el('div','note');n3.innerHTML='<b>Temuan:</b> pendapatan bersih marketplace saja hanya 95,7–100% dari revenue Catatan SHU. Setelah penjualan offline ikut dihitung, selisihnya menyempit ke 98,7–100% (Juni cocok persis). Artinya revenue Catatan SHU memang memuat offline. Selisih sisa terbesar ada di Januari.';u.appendChild(n3);
+  const u2=$('#c-uji2');u2.replaceChildren();u2.appendChild(el('h3',null,'Uji paralel biaya: alokasi (Catatan SHU) vs riil (Master 2 v3)'));
+  u2.appendChild(el('div','d','Catatan SHU memakai alokasi bahan, operasional, dan amal, tanpa iklan. Master 2 v3 memakai pengeluaran riil. Riil bahan di sini sudah dikurangi refund (cancel kardus, cashback, pengembalian).'));
+  const alok=D.alokasi_bahan,uw=el('div','tw');
+  uw.appendChild(table(['Bulan','Alokasi bahan','Riil bahan','Selisih','Biaya iklan riil','Pembanding GMV Max (Biaya_Iklan)','Iklan TikTok (Biaya_Operasional)'],
+    ids.map(i=>[D.bulan[i],num(alok[i]),num(C.bahan[i]),num(alok[i]-C.bahan[i]),num(C.iklanTot[i]),num(D.gmv_max[i]),num(D.iklan['Iklan TikTok'][i])]),
+    ['Total',num(sum(alok)),num(sum(C.bahan)),num(sum(alok)-sum(C.bahan)),num(sum(C.iklanTot)),num(sum(D.gmv_max)),num(sum(D.iklan['Iklan TikTok']))]));
+  u2.appendChild(uw);
+  const n4=el('div','note');n4.innerHTML='<b>Cara baca:</b> iklan TikTok di Biaya_Operasional sama dengan GMV Max di Biaya_Iklan pada Mei, Agu, Sep, dan Okt. Pada bulan lain ada tambahan kecil yang cocok dengan selisih Laporan TikTok.';u2.appendChild(n4);
+  $('#foot').textContent='Sumber: Master 2 v3 (Orders, Order_Lines, Biaya_Operasional, Pembeli_Marketplace, Biaya_Iklan) dan Master 1 (M_SKU). '+(DATA.snapshot_note||'');
+}
+
+/* ---------- kontrol ---------- */
+const selF=$('#from'),selT=$('#to');
+function fillSel(){[selF,selT].forEach(s=>{s.replaceChildren();DATA.bulan.forEach((b,i)=>{const o=el('option',null,b);o.value=i;s.appendChild(o)})});selF.value=F;selT.value=T}
+selF.onchange=()=>{F=+selF.value;if(T<F){T=F;selT.value=T}render()};
+selT.onchange=()=>{T=+selT.value;if(F>T){F=T;selF.value=F}render()};
+const pre=[['Jan–Okt',0,9],['Jan–Sep',0,8],['Q1',0,2],['Q2',3,5],['Q3',6,8],['Okt',9,9]];
+pre.forEach(([n,a,b])=>{const c=el('button','chip',n);c.onclick=()=>{F=a;T=b;selF.value=F;selT.value=T;render()};$('#presets').appendChild(c)});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+b.dataset.t));hideTip()});
+$('#cfgBtn').onclick=()=>$('#cfg').classList.toggle('on');
+try{const u=localStorage.getItem('hypotech_v2_api'),k=localStorage.getItem('hypotech_v2_key');if(u)$('#apiUrl').value=u;if(k)$('#apiKey').value=k}catch(e){}
+function jsonp(url,key){return new Promise((res,rej)=>{const cb='hv2_'+Date.now();const s=document.createElement('script');const t=setTimeout(()=>{cleanup();rej(new Error('Waktu habis'))},30000);
+  function cleanup(){clearTimeout(t);delete window[cb];s.remove()}
+  window[cb]=d=>{cleanup();res(d)};s.onerror=()=>{cleanup();rej(new Error('Gagal memuat'))};
+  s.src=url+(url.includes('?')?'&':'?')+'action=penjualan_v2&fresh=1&key='+encodeURIComponent(key)+'&callback='+cb;document.head.appendChild(s)})}
+async function muat(){const u=$('#apiUrl').value.trim(),k=$('#apiKey').value;if(!u||!k){$('#cfg').classList.add('on');return}
+  $('#badgeTxt').textContent='Memuat…';document.body.classList.add('dim');
+  try{const d=await jsonp(u,k);if(d.error)throw new Error(d.error);DATA=Object.assign({},SNAPSHOT,d);try{localStorage.setItem('hypotech_v2_api',u);localStorage.setItem('hypotech_v2_key',k)}catch(e){}
+    $('#badge').classList.add('live');$('#badgeTxt').textContent='Live dari Master 2 · '+(d.diperbarui||'');
+    const g=d.diagnosa,w=$('#warn');w.style.display='none';
+    if(g){const m=[];if(g.orders_dilewati>0)m.push(g.orders_dilewati+' baris Orders dilewati karena tanggal tidak terbaca');
+      if(g.biaya_dilewati>0)m.push(g.biaya_dilewati+' baris Biaya_Operasional dilewati karena tanggal tidak terbaca');
+      if(g.offline_terbaca===0)m.push('tidak ada order OFFLINE yang terbaca dari Orders');
+      if(m.length){w.innerHTML='<b>Periksa data:</b> '+m.join('; ')+'. Cek kolom Tanggal di tab terkait (harus tanggal asli, bukan teks).'+(g.contoh&&g.contoh.length?'<br>Contoh: '+g.contoh.map(x=>x.tab+' baris '+x.baris+' = "'+x.nilai+'" ('+x.tipe+')').join('; '):'');w.style.display='block'}}}catch(e){$('#badgeTxt').textContent='Gagal: '+e.message+' '}
+  document.body.classList.remove('dim');render()}
+$('#loadBtn').onclick=muat;
+$('#resetBtn').onclick=()=>{try{localStorage.removeItem('hypotech_v2_key');localStorage.removeItem('hypotech_v2_api')}catch(e){}$('#apiKey').value='';DATA=SNAPSHOT;$('#badge').classList.remove('live');$('#badgeTxt').textContent='Belum terhubung';render()};
+fillSel();render();
+if($('#apiUrl').value&&$('#apiKey').value)muat();
+setInterval(()=>{if(!document.hidden&&$('#badge').classList.contains('live'))muat()},300000);
+</script>
+</body>
+</html>
