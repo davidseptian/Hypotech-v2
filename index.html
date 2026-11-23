@@ -286,6 +286,9 @@
 
 <script>
 const APPS = [
+  { id:'ringkasan', name:'Ringkasan', icon:'📊', type:'web',
+    desc:'Gambaran Penjualan, Keuangan, dan Marketplace dalam satu halaman: omzet, profit, dana cair, dan hal yang perlu ditindaklanjuti.',
+    url:'https://davidseptian.github.io/Ringkasan-v2/' },
   { id:'pusat-input', name:'Pusat Input', icon:'📥', type:'web',
     desc:'Satu pintu input: upload marketplace, biaya, hutang & piutang, pembagian SHU, tarik Catatan SHU, dan upload affiliate.',
     url:'https://davidseptian.github.io/Pusat-Input-v2/' },
@@ -337,6 +340,8 @@ const APPS = [
 ];
 
 const CATEGORIES = [
+  { title:'Ringkasan', sub:'Gambaran cepat Penjualan, Keuangan, dan Marketplace',
+    apps:['ringkasan'] },
   { title:'Input & Operasional', sub:'Tempat semua data masuk: upload marketplace, biaya, hutang & piutang, dan SHU',
     apps:['pusat-input','marketplace'] },
   { title:'Penjualan & Pelanggan', sub:'Penjualan, retur, pelanggan dan member, afiliator, serta harga jual',
